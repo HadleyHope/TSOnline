@@ -1,0 +1,57 @@
+﻿@page "/admin/countries"
+
+@using TSOnline.Common.Interfaces.Services
+@using TSOnline.Common.Interfaces.Models
+@inject ICountriesDatabaseService CountriesDatabaseService
+
+<h1>Countries</h1>
+
+<p>This component demonstrates fetching data from a service.</p>
+
+@if (countryCount == 0)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ISO 3 Code</th>
+                <th>Name</th>
+                <th>Region</th>
+                <th>Country Code</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var country in countries)
+            {
+                <tr>
+                    <td>@country.Iso3Code</td>
+                    <td>@country.Name</td>
+                    <td>@country.Region.Name</td>
+                    <td>@country.WitsId</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private long countryCount;
+    private List<ICountry> countries;
+
+    protected override async Task OnInitializedAsync()
+    {
+        countryCount = await CountriesDatabaseService.EstimatedCountCountriesAsync();
+
+        if (countryCount > 0)
+        {
+            countries = await CountriesDatabaseService.GetAllAsync();
+        }
+        else
+        {
+            countries = new List<ICountry>(600);
+        }
+    }
+}
